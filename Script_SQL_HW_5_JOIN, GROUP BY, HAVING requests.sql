@@ -50,9 +50,11 @@ where digesttracks.track_id is null;
 --4 все исполнители, которые не выпустили альбомы в 2020 году
 
 select artist_name from artist 
+where artist_name not in (select artist_name from artist
 join artistalbum on artist.id = artistalbum.artist_id 
 join album on album.id = artistalbum.album_id
-where album_release_date != 2020
+where album_release_date=2020)
+order by artist_name; 
 
 
 --8 исполнителя(-ей), написавшего самый короткий по продолжительности трек
@@ -66,4 +68,14 @@ where track_duration = (select min(track_duration) from tracks);
 
 --9 название альбомов, содержащих наименьшее количество треков
 
+select album_name, count(tracks.id) from album 
+join tracks on album.id = tracks.album_id 
+group by album_name 
+having count(tracks.id) in (
+	select count(tracks.id) from album 
+	join tracks on album.id = tracks.album_id 
+	group by album_name 
+	order by count(tracks.id)
+	limit 1);
 
+ 
